@@ -1,25 +1,48 @@
 <template>
   <div class="game-room">
-    <h2>Your Game Room Code: {{ roomCode }}</h2>
-    <p>Choose a name for your room:</p>
-    <input v-model="roomName" placeholder="Enter room name" />
-    <button @click="createGameRoom">Create Room</button>
+    <h2>Create a Game Room</h2>
+    <p>Choose a category for your game:</p>
+    <select v-model="category">
+      <option value="" disabled>Select a category</option>
+      <option value="animals">Animals</option>
+      <option value="food">Food</option>
+      <option value="objects">Objects</option>
+    </select>
+    <button @click="createGameRoom" :disabled="!category">Create Room</button>
+    <button @click="backHome">Back Home</button>
+    <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useSocket } from "../socket.ts";
 
-const route = useRoute();
-const roomName = ref('');
-const roomCode = ref(route.params.roomCode); 
+const socket = useSocket();
+const router = useRouter();
+const category = ref('');
+const error = ref('');
 
-const createGameRoom = () => {
-  if (roomName.value) {
-    roomCode.value = Math.random().toString(36).substr(2, 6).toUpperCase(); 
-    console.log('Room created: ', roomCode.value);
+const backHome = () => {
+  router.push('/');
+};
+
+const createGameRoom = async () => {
+  if (!category.value) {
+    error.value = "select a catgory";
+    return;
   }
+  console.log(category.value);
+  socket.emit("createRoom", { category: category.value });
+
+  socket.on("roomCreated", (data) => {
+    router.push({ name: "GameRoomPage", params: { roomCode: data.roomCode } });
+  });
+
+  socket.on("roomCreationError", (message) => {
+    error.value = message;
+  });
 };
 </script>
 
@@ -32,7 +55,12 @@ const createGameRoom = () => {
 h2 {
   color: #007bff;
 }
-p {
-  color: #007bff;
+
+.error {
+  color: red;
+}
+
+select {
+  margin: 10px 0;
 }
 </style>

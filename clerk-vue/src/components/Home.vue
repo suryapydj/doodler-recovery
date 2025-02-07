@@ -9,26 +9,20 @@ const router = useRouter();
 const socket = useSocket();
 
 const roomCode = ref('');
-const password = ref('');
 const errorMessage = ref('');
 
 const joinRoom = () => {
-  if (roomCode.value && password.value) {
-    socket.emit('joinRoom', { roomCode: roomCode.value, password: password.value });
-    socket.on('joinedRoom', (data) => {
-      console.log(`Joined room: ${data.roomName} (code: ${roomCode.value})`);
+  if (roomCode.value) {
+    socket.emit('joinRoom', { roomCode: roomCode.value });
+    socket.on('joinedRoom', () => {
       router.push(`/game-room/${roomCode.value}`);
-    });
-
-    socket.on('incorrectPassword', (message) => {
-      errorMessage.value = message;
     });
 
     socket.on('noRoom', (message) => {
       errorMessage.value = message;
     });
   } else {
-    errorMessage.value = 'Please enter a room code and password.';
+    errorMessage.value = 'no rc';
   }
 };
 
@@ -41,7 +35,6 @@ const navigateToGameRoom = () => {
   <div v-if="isSignedIn">
     <h1>Welcome, {{ user?.fullName }}!</h1>
     <input v-model="roomCode" placeholder="Enter Room Code" />
-    <input v-model="password" type="password" placeholder="Enter Room Password" />
     <button @click="joinRoom">Join Game Room</button>
     <p v-if="errorMessage">{{ errorMessage }}</p>
     <button @click="navigateToGameRoom" class="create-game-btn">Create Game Room</button>

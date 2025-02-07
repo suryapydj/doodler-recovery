@@ -7,15 +7,17 @@ const server = http.createServer(app);
 const io = new Server(server);
 const cors = require("cors");
 const PORT = 3000;
+const gameLogic = require("./game.js");
 const rooms = {};
 
 app.use(
   cors({
-    origin: "*", 
-    methods: ["GET", "POST"], 
-    credentials: true, 
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
   })
 );
+
 app.use(express.static(path.join(__dirname, "clerk-vue", "dist")));
 
 app.get("*", (req, res) => {
@@ -27,46 +29,82 @@ const generateRoomCode = () => {
 };
 
 io.on("connection", (socket) => {
-  socket.on("createRoom", ({ roomName, password }) => {
-    const roomCode = generateRoomCode();
+  socket.on("createRoom", ({ category }) => {
+    if (!category) {
+      socket.emit("roomCreationError", "no cat");
+      return;
+    }
 
-    if (rooms[roomCode]) {
-      socket.emit("roomExists", `Room ${roomCode} already exists.`);
-    } else {
-      rooms[roomCode] = { roomName, password, players: [] };
+    let roomCode;
+    do {
+      roomCode = generateRoomCode();
+    } while (rooms[roomCode]);
+
+    const newRoom = {
+      roomCode: roomCode,
+      roomName: `Room ${roomCode}`,
+      players: [socket.id],
+      category: category,
+      drawer: socket.id
+    };
+
+    rooms[roomCode] = newRoom;
+    socket.join(roomCode);
+    socket.emit("roomCreated", { roomCode, roomName: newRoom.roomName });
+  });
+
+  socket.on("joinRoom", ({ roomCode }) => {
+    const room = rooms[roomCode];
+
+    if (room) {
       socket.join(roomCode);
-      rooms[roomCode].players.push(socket.id);
-      socket.emit("roomCreated", { roomCode, roomName });
+      room.players.push(socket.id);
+      socket.emit("joinedRoom", { roomCode, roomName: room.roomName });
+
+      socket.emit("roomDetails", {
+        players: room.players,
+        prompt: gameLogic.getPromptByCategory(room.category), 
+      });
+
+      console.log(` ${roomCode} + one/one/one/one/one/tim trash`);
+    } else {
+      socket.emit("noRoom", `no ${roomCode}.`);
     }
   });
 
-  socket.on("joinRoom", ({ roomCode, password }) => {
-    if (rooms[roomCode]) {
-      if (rooms[roomCode].password === password) {
-        socket.join(roomCode);
-        rooms[roomCode].players.push(socket.id);
-        socket.emit("joinedRoom", { roomCode, roomName: rooms[roomCode].roomName });
+  socket.on("getPrompt", ({ roomCode, category }) => {
+    if (!category) {
+      socket.emit("noPrompts", "no cat");
+      return;
+    }
+
+    const room = rooms[roomCode];
+    if (room && room.category === category) {
+      const prompt = gameLogic.getPromptByCategory(category);
+      if (prompt) {
+        io.to(roomCode).emit("newPrompt", prompt);
       } else {
-        socket.emit("incorrectPassword", "Incorrect room password.");
+        socket.emit("noPrompts", `no ${category}`);
       }
     } else {
-      socket.emit("noRoom", `Room ${roomCode} does not exist.`);
+      socket.emit("noRoom", `no ${roomCode} `);
     }
   });
 
   socket.on("disconnect", () => {
     for (const roomCode in rooms) {
       const room = rooms[roomCode];
-      if (room.players.includes(socket.id)) {
+      if (room && room.players.includes(socket.id)) {
         room.players = room.players.filter((id) => id !== socket.id);
         if (room.players.length === 0) {
           delete rooms[roomCode];
         }
+        break;
       }
     }
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`port ${PORT}`);
 });

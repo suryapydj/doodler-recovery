@@ -16,7 +16,8 @@ const { isSignedIn } = useUser(); */
 
       <SignedIn>
         <UserButton />
-        <RouterView />
+        <RouterView/>
+        <RouterView name="canvas"/>
       </SignedIn>
     </header>
 

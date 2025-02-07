@@ -205,6 +205,7 @@ canvas {
   background-color: white;
 }
 .prompt-box {
+  color: black;
   font-size: 18px;
   font-weight: bold;
   text-align: center;

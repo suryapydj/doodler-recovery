@@ -73,6 +73,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("getPrompt", ({ roomCode, category }) => {
+    console.log("sdjflksdfjk");
     if (!category) {
       socket.emit("noPrompts", "no cat");
       return;

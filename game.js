@@ -5,7 +5,7 @@ const categories = {
 }
 
 
-function getPromptByCategory(category) {
+function prompt(category) {
   if (categories[category]) {
     const words = categories[category];
     return words[Math.floor(Math.random() * words.length)];
@@ -13,4 +13,4 @@ function getPromptByCategory(category) {
   return null; 
 }
 
-module.exports = { getPromptByCategory };
+module.exports = { prompt };

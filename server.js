@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 
       socket.emit("roomDetails", {
         players: room.players,
-        prompt: gameLogic.getPromptByCategory(room.category), 
+        prompt: gameLogic.prompt(room.category), 
       });
 
       console.log(` ${roomCode} + one/one/one/one/one/tim trash`);
@@ -73,7 +73,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("getPrompt", ({ roomCode, category }) => {
-    console.log("sdjflksdfjk");
     if (!category) {
       socket.emit("noPrompts", "no cat");
       return;
@@ -81,7 +80,7 @@ io.on("connection", (socket) => {
 
     const room = rooms[roomCode];
     if (room && room.category === category) {
-      const prompt = gameLogic.getPromptByCategory(category);
+      const prompt = gameLogic.prompt(category);
       if (prompt) {
         io.to(roomCode).emit("newPrompt", prompt);
       } else {

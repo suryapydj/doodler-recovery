@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../components/Home.vue";
-import GameRoom from "../components/GameRoom.vue";
+import CreateRoom from "../components/CreateRoom.vue";
+import JoinRoom from "../components/JoinRoom.vue";
 import GameRoomPage from "../components/GameRoomPage.vue";
 import Canvas from "../components/Canvas.vue";
 
 const routes = [
   { path: "/", component: Home },
-  { path: "/game-room", component: GameRoom },
+  {path: "/create", component: CreateRoom},
+  {path: "/join", component: JoinRoom},
   {
     path: "/game-room/:roomCode",
     name: "GameRoomPage",

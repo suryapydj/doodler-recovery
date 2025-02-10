@@ -4,7 +4,8 @@ import App from "./App.vue";
 import { clerkPlugin } from "@clerk/vue";
 import router from "./router";
 import Home from "./components/Home.vue";
-import GameRoom from "./components/GameRoom.vue";
+import CreateRoom from "./components/CreateRoom.vue";
+import JoinRoom from "./components/JoinRoom.vue";
 import GameRoomPage from "./components/GameRoomPage.vue";
 import Canvas from "./components/Canvas.vue";
 import { useSocket } from "./socket.ts";
@@ -19,7 +20,8 @@ const socket = useSocket()
 const app = createApp(App);
 
 app.component("Home", Home);
-app.component("GameRoom", GameRoom);
+app.component("CreateRoom", CreateRoom);
+app.component("JoinRoom", JoinRoom);
 app.component("GameRoomPage", GameRoomPage);
 app.component("Canvas", Canvas);
 app.config.globalProperties.$socket = socket;

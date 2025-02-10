@@ -29,47 +29,49 @@ const generateRoomCode = () => {
 };
 
 io.on("connection", (socket) => {
+
   socket.on("createRoom", ({ category }) => {
+
     if (!category) {
-      socket.emit("roomCreationError", "no cat");
+      socket.emit("roomCreationError", "no category selected");
       return;
     }
 
     let roomCode;
+
     do {
       roomCode = generateRoomCode();
     } while (rooms[roomCode]);
 
-    const newRoom = {
+    rooms[roomCode] = {
       roomCode: roomCode,
-      roomName: `Room ${roomCode}`,
-      players: [socket.id],
+      players: [],
       category: category,
-      drawer: socket.id
+      host: socket.id
     };
 
-    rooms[roomCode] = newRoom;
-    socket.join(roomCode);
-    socket.emit("roomCreated", { roomCode, roomName: newRoom.roomName });
+    socket.emit("roomCreated", { roomCode });
   });
 
   socket.on("joinRoom", ({ roomCode }) => {
+    // Should also check if player is already in a room
+
     const room = rooms[roomCode];
 
-    if (room) {
-      socket.join(roomCode);
-      room.players.push(socket.id);
-      socket.emit("joinedRoom", { roomCode, roomName: room.roomName });
-
-      socket.emit("roomDetails", {
-        players: room.players,
-        prompt: gameLogic.prompt(room.category), 
-      });
-
-      console.log(` ${roomCode} + one/one/one/one/one/tim trash`);
-    } else {
-      socket.emit("noRoom", `no ${roomCode}.`);
+    if (!room) {
+      socket.emit("roomJoinError", `room ${roomCode} does not exist`);
     }
+
+    socket.join(roomCode);
+    room.players.push(socket.id);
+
+    socket.emit("joinedRoom", { roomCode });
+
+    io.to(roomCode).emit("roomDetails", {
+      players: room.players
+    });
+
+    console.log(`Player ${socket.id} joined room ${roomCode}`);
   });
 
   socket.on("getPrompt", ({ roomCode, category }) => {

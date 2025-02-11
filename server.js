@@ -54,28 +54,44 @@ io.on("connection", (socket) => {
     socket.emit("roomCreated", { roomCode });
   });
 
-  socket.on("joinRoom", ({ roomCode }) => {
-    // Should also check if player is already in a room
+    socket.on("joinRoom", ({ roomCode }) => {
+      // Should also check if player is already in a room
 
-    const room = rooms[roomCode];
+      const room = rooms[roomCode];
 
-    console.log(roomCode)
+      console.log(roomCode)
 
-    if (!room) {
-      socket.emit("roomJoinError", `room ${roomCode} does not exist`);
-      return;
-    }
+      if (!room) {
+        socket.emit("roomJoinError", `room ${roomCode} does not exist`);
+        return;
+      }
 
-    socket.join(roomCode);
-    room.players.push(socket.id);
+      socket.join(roomCode);
+      room.players.push(socket.id);
 
-    socket.emit("joinedRoom", { roomCode });
+      socket.emit("joinedRoom", { roomCode });
 
-    io.to(roomCode).emit("roomDetails", {
-      players: room.players
+      io.to(roomCode).emit("roomDetails", {
+        players: room.players
+      });
     });
 
-    console.log(`Player ${socket.id} joined room ${roomCode}`);
+    socket.on("startGame", ({ roomCode }) => {
+      // Should in future also check if the player is the host
+
+      const room = rooms[roomCode];
+
+      if (!room) {
+        return;
+      }
+
+      if (!room.players.includes(socket.id)) {
+        return;
+      }
+  
+      console.log(`Room ${roomCode} started game`)
+
+      io.to(roomCode).emit("gameStarted");
   });
 
   socket.on("getPrompt", ({ roomCode, category }) => {

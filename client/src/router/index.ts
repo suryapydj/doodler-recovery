@@ -15,7 +15,6 @@ const routes = [
     components: { default: GameRoom, canvas: Canvas },
     props: true,
   },
-  { path: "/canvas/:gameCode", component: Canvas, props: true },
   /* { path: '/game-room/:roomCode', component: GameRoom, props: true },  some issue here prob */
 ];
 

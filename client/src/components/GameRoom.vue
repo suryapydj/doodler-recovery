@@ -6,26 +6,42 @@
       <li v-for="player in players" :key="player">{{ player }}</li> /* the players thing looks weird we might remove it. it shows their socket id so its just a bunch of random numbers*/
     </ul>
     <button @click="start">Start</button>
+    <RouterView v-if="gameStarted" name="canvas"/>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useSocket } from "../socket.ts";
 
+// this is important to understand https://www.matijanovosel.com/blog/define-component-vs-script-setup
+
 export default defineComponent({
-  setup() {
+  props: {
+    gameStarted: {
+      type: Boolean,
+      default: false,
+      required: false
+    }
+  },
+  
+  setup(props) {
     const route = useRoute();
-    const router = useRouter();
+    //const router = useRouter();
     const roomCode = route.params.roomCode as string;
     const socket = useSocket();
 
     const players = ref<string[]>([]);
 
     const start = () => {
-      router.push(`/canvas/${roomCode}`);
+      socket.emit("startGame", {roomCode});
     };
+
+    socket.on("gameStarted", () => {
+      console.log("game started!");
+      props.gameStarted = true; // likely have to use refs or something
+    });
 
     const setupSocketListeners = () => {
       socket.on("roomDetails", (data) => {
@@ -44,6 +60,7 @@ export default defineComponent({
       roomCode,
       players,
       start,
+      gameStarted,
     };
   },
 });

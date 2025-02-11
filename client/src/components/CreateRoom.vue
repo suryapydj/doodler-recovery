@@ -37,11 +37,15 @@ const createGameRoom = async () => {
   socket.emit("createRoom", { category: category.value });
 
   socket.on("roomCreated", (data) => {
-    router.push({ name: "GameRoomPage", params: { roomCode: data.roomCode } });
+    socket.emit("joinRoom", {roomCode: data.roomCode});
   });
 
   socket.on("roomCreationError", (message) => {
     error.value = message;
+  });
+
+  socket.on("joinedRoom", (data) => {
+    router.push({ name: "GameRoom", params: { roomCode: data.roomCode } });
   });
 };
 </script>

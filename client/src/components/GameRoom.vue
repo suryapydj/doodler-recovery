@@ -33,7 +33,7 @@ export default defineComponent({
       });
     };
 
-    socket.emit("joinRoom", { roomCode });
+    //socket.emit("joinRoom", { roomCode });
     setupSocketListeners();
 
     onBeforeUnmount(() => {

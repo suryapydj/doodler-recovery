@@ -25,6 +25,7 @@ app.get("*", (req, res) => {
 });
 
 const generateRoomCode = () => {
+  // don't inlude 0s and Os because they can be confused (or choose font in frontend where they are easily distinguishable) - same thing for 1s and ls
   return Math.random().toString(36).substr(2, 6).toUpperCase();
 };
 
@@ -58,8 +59,11 @@ io.on("connection", (socket) => {
 
     const room = rooms[roomCode];
 
+    console.log(roomCode)
+
     if (!room) {
       socket.emit("roomJoinError", `room ${roomCode} does not exist`);
+      return;
     }
 
     socket.join(roomCode);

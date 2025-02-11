@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+// import { ref } from 'vue';
 import { useUser } from '@clerk/vue';
 import { useRouter } from 'vue-router';
-import { useSocket } from '../socket.ts';
+// import { useSocket } from '../socket.ts';
 
 const { user, isSignedIn } = useUser();
 const router = useRouter();
-const socket = useSocket();
+// const socket = useSocket();
 
-const errorMessage = ref('');
+// const errorMessage = ref('');
 /*
 const joinRoom = () => {
   if (roomCode.value) {

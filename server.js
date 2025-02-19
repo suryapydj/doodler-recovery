@@ -70,9 +70,14 @@ io.on("connection", (socket) => {
       room.players.push(socket.id);
 
       socket.emit("joinedRoom", { roomCode });
+    });
+
+    socket.on("getRoomDetails", ({roomCode}) => {
+      const room = rooms[roomCode];
 
       io.to(roomCode).emit("roomDetails", {
-        players: room.players
+        players: room.players,
+        category: room.category,
       });
     });
 

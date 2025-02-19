@@ -3,9 +3,10 @@
     <h1>Welcome to Room {{ roomCode }}</h1>
     <p>Players in this room:</p>
     <ul>
-      <li v-for="player in players" :key="player">{{ player }}</li> /* the players thing looks weird we might remove it. it shows their socket id so its just a bunch of random numbers*/
+      <li v-for="player in players" :key="player">{{ player }}</li>
     </ul>
     <button @click="start">Start</button>
+    <button @click="getPrompt">Get Prompt</button>
     <Canvas v-if="gameStarted"></Canvas>
   </div>
 </template>
@@ -25,24 +26,40 @@ export default defineComponent({
     const socket = useSocket();
     let gameStarted = ref(false)
     const players = ref<string[]>([]);
+    let category: string;
+
+    socket.emit("getRoomDetails", {roomCode});
+
+    socket.on("roomDetails", (data) => {
+      players.value = data.players;
+      category = data.category;
+    });
 
     const start = () => {
       socket.emit("startGame", {roomCode});
     };
+
+    const getPrompt = () => {
+      socket.emit("getPrompt", {roomCode, category});
+    }
+
+    socket.on("newPrompt", (prompt) => {
+      alert(prompt);
+    });
 
     socket.on("gameStarted", () => {
       console.log("game started!");
       gameStarted.value = true;
     });
 
-    const setupSocketListeners = () => {
+    /*const setupSocketListeners = () => {
       socket.on("roomDetails", (data) => {
         players.value = data.players;
       });
     };
 
     //socket.emit("joinRoom", { roomCode });
-    setupSocketListeners();
+    setupSocketListeners();*/
 
     onBeforeUnmount(() => {
       socket.off("roomDetails");
@@ -53,6 +70,7 @@ export default defineComponent({
       players,
       start,
       gameStarted,
+      getPrompt,
     };
   },
 });

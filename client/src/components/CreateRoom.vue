@@ -5,7 +5,7 @@
     <select v-model="category">
       <option value="" disabled>Select a category</option>
       <option value="animals">Animals</option>
-      <option value="food">Food</option>
+      <option value="places">Places</option>
       <option value="objects">Objects</option>
     </select>
     <button @click="createGameRoom" :disabled="!category">Create Room</button>

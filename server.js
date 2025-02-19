@@ -118,6 +118,11 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("canvasImageData", (imageData, roomCode) => {
+    console.log("data");
+    io.to(roomCode).emit("getImageData", (imageData));
+  });
+
   socket.on("disconnect", () => {
     for (const roomCode in rooms) {
       const room = rooms[roomCode];

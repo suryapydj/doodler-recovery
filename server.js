@@ -25,7 +25,8 @@ app.get("*", (req, res) => {
 });
 
 const generateRoomCode = () => {
-  // don't inlude 0s and Os because they can be confused (or choose font in frontend where they are easily distinguishable) - same thing for 1s and ls
+  // don't inlude 0s and Os because they can be confused (or choose font in frontend where they are easily distinguishable) - same thing for 1s and ls.
+  //ok yeah good point
   return Math.random().toString(36).substr(2, 6).toUpperCase();
 };
 

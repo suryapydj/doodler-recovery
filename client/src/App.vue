@@ -70,7 +70,6 @@ body, html {
   flex-direction: column;
   width: 100vh;
   height: 100vh;
-  max-width: 1000px;
   overflow: hidden;
 }
 
@@ -160,8 +159,8 @@ button:focus {
   position: relative;
   margin-top: 150px; 
   width: 100%;
-  height: 250px;
-  background: #f4f4f4;
+  height: 100%;
+  background: #FFFFFF;
   border-radius: 10px;
   overflow: hidden;
 }

@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useRoute } from "vue-router";
 import { useSocket } from "../socket.ts"; 
 
 const socket = useSocket();
-const roomCode = useRoute().params.roomCode as string;
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const colourPicker = ref<HTMLInputElement | null>(null);
@@ -29,16 +27,20 @@ let lastX = 0;
 let lastY = 0;
 
 const shareCanvas = () => {
-  console.log("shared canvas");
-  if (ctx) socket.emit("canvasImageData", ({"imageData": ctx.getImageData(0, 0, 500, 500), "roomCode": roomCode}));
+  let imageData;
+  if (ctx) {
+    imageData = ctx.getImageData(0, 0, 500, 500).data.buffer;
+  }
+  socket.emit("canvasImageData", ({imageData}));
 };
 
 socket.on("newPrompt", (data: string) => {
   prompt.value = `Prompt: ${data}`;
 });
 
-socket.on("getImageData", (imageData) => {
-  console.log("received data");
+socket.on("getImageData", (d) => {
+  let array = new Uint8ClampedArray(d.imageData);
+  let imageData = new ImageData(array, 500);
   if (ctx) ctx.putImageData(imageData, 0, 0);
 });
 
@@ -59,7 +61,6 @@ onMounted(() => {
   if (eraserBtn.value) eraserBtn.value.addEventListener("click", () => (tool = "eraser"));
   if (fillBtn.value) fillBtn.value.addEventListener("click", () => (tool = "fill"));
   if (shareBtn.value) shareBtn.value.addEventListener("click", () => {
-    console.log("button clicked");
     shareCanvas();
   });
 

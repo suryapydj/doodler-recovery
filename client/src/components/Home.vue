@@ -1,29 +1,9 @@
 <script setup lang="ts">
-// import { ref } from 'vue';
 import { useUser } from '@clerk/vue';
 import { useRouter } from 'vue-router';
-// import { useSocket } from '../socket.ts';
 
 const { user, isSignedIn } = useUser();
 const router = useRouter();
-// const socket = useSocket();
-
-// const errorMessage = ref('');
-/*
-const joinRoom = () => {
-  if (roomCode.value) {
-    socket.emit('joinRoom', { roomCode: roomCode.value });
-    socket.on('joinedRoom', () => {
-      router.push(`/game-room/${roomCode.value}`);
-    });
-
-    socket.on('roomJoinError', (message) => {
-      errorMessage.value = message;
-    });
-  } else {
-    errorMessage.value = 'no rc';
-  }
-};*/
 
 const navigateToCreateRoom = () => {
   router.push('/create');

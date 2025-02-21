@@ -52,15 +52,6 @@ export default defineComponent({
       gameStarted.value = true;
     });
 
-    /*const setupSocketListeners = () => {
-      socket.on("roomDetails", (data) => {
-        players.value = data.players;
-      });
-    };
-
-    //socket.emit("joinRoom", { roomCode });
-    setupSocketListeners();*/
-
     onBeforeUnmount(() => {
       socket.off("roomDetails");
     });

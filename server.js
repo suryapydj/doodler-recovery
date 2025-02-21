@@ -118,9 +118,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("canvasImageData", (imageData, roomCode) => {
-    console.log("data");
-    io.to(roomCode).emit("getImageData", (imageData));
+  socket.on("canvasImageData", (imageData) => {
+    io.emit("getImageData", (imageData));
   });
 
   socket.on("disconnect", () => {

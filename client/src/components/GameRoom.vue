@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="game-space">
     <h1>Welcome to Room {{ roomCode }}</h1>
     <p>Players in this room:</p>
     <ul>
@@ -10,7 +10,6 @@
     <Canvas v-if="gameStarted"></Canvas>
   </div>
 </template>
-
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -66,3 +65,8 @@ export default defineComponent({
   },
 });
 </script>
+<style> /* I'm trying to make it so that the canvas and player list are side-by-side but the styling isn't applying for some reason */
+.game-space {
+  display: flex,
+}
+</style>

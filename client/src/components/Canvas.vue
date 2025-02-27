@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useRoute } from "vue-router";
 import { useSocket } from "../socket.ts"; 
 
 const socket = useSocket();
+const route = useRoute();
+const roomCode = route.params.roomCode as string;
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const colourPicker = ref<HTMLInputElement | null>(null);
@@ -31,15 +34,15 @@ const shareCanvas = () => {
   if (ctx) {
     imageData = ctx.getImageData(0, 0, 500, 500).data.buffer;
   }
-  socket.emit("canvasImageData", ({imageData}));
+  socket.emit("canvasImageData", {roomCode, imageData});
 };
 
 socket.on("newPrompt", (data: string) => {
   prompt.value = `Prompt: ${data}`;
 });
 
-socket.on("getImageData", (d) => {
-  let array = new Uint8ClampedArray(d.imageData);
+socket.on("getImageData", (data) => {
+  let array = new Uint8ClampedArray(data);
   let imageData = new ImageData(array, 500);
   if (ctx) ctx.putImageData(imageData, 0, 0);
 });
@@ -160,6 +163,11 @@ const drawFrom = (x1: number, y1: number, x2: number, y2: number) => {
       weight
     );
   }
+  let imageData;
+  if (ctx) {
+    imageData = ctx.getImageData(0, 0, 500, 500).data.buffer;
+  }
+  socket.emit("canvasImageData", {roomCode, imageData});
 };
 
 const fill = (start_x: number, start_y: number, target_colour: string) => {
@@ -193,6 +201,11 @@ const fill = (start_x: number, start_y: number, target_colour: string) => {
       }
     }
   }
+  let imageData;
+  if (ctx) {
+    imageData = ctx.getImageData(0, 0, 500, 500).data.buffer;
+  }
+  socket.emit("canvasImageData", {roomCode, imageData});
 };
 
 const setPixelColour = (x: number, y: number, colour: string) => {

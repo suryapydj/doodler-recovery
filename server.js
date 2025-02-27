@@ -33,9 +33,8 @@ const generateRoomCode = () => {
 io.on("connection", (socket) => {
 
   socket.on("createRoom", ({ category }) => {
-
     if (!category) {
-      socket.emit("roomCreationError", "no category selected");
+      socket.emit("createRoomError", "no category selected");
       return;
     }
 
@@ -52,7 +51,7 @@ io.on("connection", (socket) => {
       host: socket.id
     };
 
-    socket.emit("roomCreated", { roomCode });
+    socket.emit("createdRoom", { roomCode });
   });
 
     socket.on("joinRoom", ({ roomCode }) => {
@@ -60,14 +59,14 @@ io.on("connection", (socket) => {
 
       const room = rooms[roomCode];
 
-      console.log(roomCode)
-
       if (!room) {
-        socket.emit("roomJoinError", `room ${roomCode} does not exist`);
+        socket.emit("joinRoomError", `room ${roomCode} does not exist`);
         return;
       }
 
       socket.join(roomCode);
+      console.log(`Player ${socket.id} joined ${roomCode}`)
+
       room.players.push(socket.id);
 
       socket.emit("joinedRoom", { roomCode });
@@ -119,8 +118,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("canvasImageData", (imageData) => {
-    io.emit("getImageData", (imageData));
+  socket.on("canvasImageData", ({ roomCode, imageData }) => {
+    io.to(roomCode).emit("getImageData", imageData);
   });
 
   socket.on("disconnect", () => {

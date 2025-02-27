@@ -36,11 +36,11 @@ const createGameRoom = async () => {
   console.log(category.value);
   socket.emit("createRoom", { category: category.value });
 
-  socket.on("roomCreated", (data) => {
+  socket.on("createdRoom", (data) => {
     socket.emit("joinRoom", {roomCode: data.roomCode});
   });
 
-  socket.on("roomCreationError", (message) => {
+  socket.on("createRoomError", (message) => {
     error.value = message;
   });
 

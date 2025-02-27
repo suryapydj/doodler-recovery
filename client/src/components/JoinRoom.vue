@@ -23,7 +23,7 @@ const joinRoom = () => {
   socket.emit("joinRoom", { roomCode: roomCode.value });
 }
 
-socket.on("roomJoinError", (data) => {
+socket.on("joinRoomError", (data) => {
   console.log(data);
 });
 

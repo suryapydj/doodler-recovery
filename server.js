@@ -48,7 +48,8 @@ io.on("connection", (socket) => {
       roomCode: roomCode,
       players: [],
       category: category,
-      host: socket.id
+      host: socket.id,
+      drawerIndex: 0
     };
 
     socket.emit("createdRoom", { roomCode });
@@ -119,7 +120,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("canvasImageData", ({ roomCode, imageData }) => {
-    io.to(roomCode).emit("getImageData", imageData);
+    let room = rooms[roomCode];
+    if (socket.id == room.players[room.drawerIndex]) { /* if socket request is from drawer */
+      io.to(roomCode).emit("getImageData", imageData);
+    }
+  });
+
+  socket.on("changeDrawer", ({ roomCode }) => {
+    let room = rooms[roomCode];
+    room.drawerIndex++;
+    room.drawerIndex%=room.players.length;    
   });
 
   socket.on("disconnect", () => {

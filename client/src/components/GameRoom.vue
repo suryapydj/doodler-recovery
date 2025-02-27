@@ -7,6 +7,7 @@
     </ul>
     <button @click="start">Start</button>
     <button @click="getPrompt">Get Prompt</button>
+    <button @click="changeDrawer">Change Drawer</button>
     <Canvas v-if="gameStarted"></Canvas>
   </div>
 </template>
@@ -42,6 +43,10 @@ export default defineComponent({
       socket.emit("getPrompt", {roomCode, category});
     }
 
+    const changeDrawer = () => {
+      socket.emit("changeDrawer", {roomCode});
+    }
+
     socket.on("newPrompt", (prompt) => {
       alert(prompt);
     });
@@ -61,6 +66,7 @@ export default defineComponent({
       start,
       gameStarted,
       getPrompt,
+      changeDrawer,
     };
   },
 });

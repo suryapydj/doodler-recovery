@@ -65,7 +65,7 @@ export default defineComponent({
     const username = ref("")
     const gamePrompt = ref<string | null>(null);
     //console.log(username)
-
+    //t
     const mes = ref<Message[]>([]);
     // use quotes or apostrophes but keep it consistent ;(
     const curmes = ref("");
